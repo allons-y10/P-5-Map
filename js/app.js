@@ -408,7 +408,7 @@ var styles = [
          url: fsApi,
          datatype: 'jsonp',
          success: function(response) {
-            rsp = response.response.groups[0].items[0].venue;
+            rsp = response;
             console.log(rsp);
 
             infoWindow.setContent('< href="' + location.fsApi + '">' + rsp.name + '</a>' + '<br>' + location.phone + '<br>');
