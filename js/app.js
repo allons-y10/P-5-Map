@@ -120,7 +120,7 @@ var styles = [
           markers.push(marker);
           // Create an onclick event to open an infowindow at each marker.
           marker.addListener('click', function() {
-            populateInfoWindow(this, largeInfoWindow);
+            /*populateInfoWindow*/getFSinfo(this, largeInfoWindow);
           });
           markers[i].setMap(map);
           // Two event listeners - one for mouseover, one for mouseout,
@@ -348,17 +348,18 @@ var styles = [
    }
 
 
-
 //** ViewModel **\\
       var ViewModel = function() {
         var self = this;
+
+        var newList
 
         this.locList = ko.observableArray([]);
 
         this.filterValue = ko.observable("");
 
         this.masterList = ko.computed(function() {
-            var newList = []
+            newList = []
             locations.forEach(function(LocItem) {
                 if (LocItem.title.toLowerCase().includes(self.filterValue().toLowerCase())) {
                     newList.push(new Loc(LocItem));
@@ -376,9 +377,51 @@ var styles = [
             }
             return newList;
         }, this);
+
         //locations.forEach(function(LocItem) {
             //self.locList.push(new Loc(LocItem));
-        //})
+            //console.log(LocItem);
+        //});
+
+        //console.log(locations[0].location.lat);
+/*foursquare API request*/
+  //(function() {
+      self.fsLocations = ko.observableArray(locations);
+      //console.log(self.fsLocations);
+
+     function getFSinfo(location) {
+      var clientID = 'JS1EBO3RLBZPWCVMMJXNEPIDRMZXHM0ISZ54R0SWOKTPLPJN';
+      var ClientSec = '1VY312WE5KJBSOO4JD0UDLQV51III51AJ5T1RVGP0AZPHBE5';
+      var api = 'https://api.foursquare.com/v2/venues/search';
+      var version = 'v=20130815';
+      var llLat;
+      var llLng;
+      var errorMsg;
+      var rsp;
+
+         llLat = location.location.lat;
+         llLng = location.location.lng;
+      //var latlng = markers.position;
+      var fsApi = api + '?client_id=' + clientID + '&' + 'client_secret=' + ClientSec + '&' + version + '&ll=' + llLat +',' + llLng;
+      console.log();
+      $.ajax({
+         url: fsApi,
+         datatype: 'jsonp',
+         success: function(response) {
+            rsp = response.response.groups[0].items[0].venue;
+            console.log(rsp);
+
+            infoWindow.setContent('< href="' + location.fsApi + '">' + rsp.name + '</a>' + '<br>' + location.phone + '<br>');
+
+            infoWindow.open(map, location.marker);
+         }
+            });
+
+}
+
+
+
+
 
 }
 
@@ -386,3 +429,5 @@ var styles = [
 
 
       ko.applyBindings(new ViewModel());
+
+
