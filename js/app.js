@@ -1,6 +1,6 @@
 //** model **\\
 //points of interest in Ventura
-var locations = [
+var modLocations = [
           {title: 'In-N-Out Burger', location: {lat: 34.268384, lng: -119.272895}},
           {title: "Pete's Breakfast House", location: {lat: 34.278077, lng: -119.269555}},
           {title: "Allison's Country Cafe", location: {lat: 34.273173, lng: -119.249263}},
@@ -103,10 +103,10 @@ var styles = [
       var highlightedIcon = makeMarkerIcon('FFFF24');
 
       //for-loop to go through locations array
-      for (var i = 0; i < locations.length; i++) {
+      for (var i = 0; i < modLocations.length; i++) {
           // Get the position from the location array.
-          var position = locations[i].location;
-          var title = locations[i].title;
+          var position = modLocations[i].location;
+          var title = modLocations[i].title;
           // Create a marker per location, and put into markers array.
            var marker = new google.maps.Marker({
             position: position,
@@ -142,6 +142,41 @@ var styles = [
             searchWithinTime();
         });
       }
+      /*foursquare API request*/
+  //(function() {
+      //self.fsLocations = ko.observableArray(modLocations);
+      //console.log(self.fsLocations);
+
+     function getFSinfo(modLocations) {
+        console.log("location: ",modLocations.location);
+      var clientID = 'JS1EBO3RLBZPWCVMMJXNEPIDRMZXHM0ISZ54R0SWOKTPLPJN';
+      var ClientSec = '1VY312WE5KJBSOO4JD0UDLQV51III51AJ5T1RVGP0AZPHBE5';
+      var api = 'https://api.foursquare.com/v2/venues/search';
+      var version = 'v=20130815';
+      var llLat;
+      var llLng;
+      var errorMsg;
+      var rsp;
+
+         llLat = modLocations.location.lat;
+         llLng = modLocations.location.lng;
+      //var latlng = markers.position;
+      var fsApi = api + '?client_id=' + clientID + '&' + 'client_secret=' + ClientSec + '&' + version + '&ll=' + llLat +',' + llLng;
+      console.log();
+      $.ajax({
+         url: fsApi,
+         datatype: 'jsonp',
+         success: function(response) {
+            rsp = response;
+            console.log(rsp);
+
+            infoWindow.setContent('< href="' + location.fsApi + '">' + rsp.name + '</a>' + '<br>' + location.phone + '<br>');
+
+            infoWindow.open(map, location.marker);
+         }
+            });
+
+}
 
       // This function populates the infowindow when the marker is clicked. We'll only allow
       // one infowindow which will open at the marker that is clicked, and populate based
@@ -360,7 +395,7 @@ var styles = [
 
         this.masterList = ko.computed(function() {
             newList = []
-            locations.forEach(function(LocItem) {
+            modLocations.forEach(function(LocItem) {
                 if (LocItem.title.toLowerCase().includes(self.filterValue().toLowerCase())) {
                     newList.push(new Loc(LocItem));
                 }
@@ -384,40 +419,7 @@ var styles = [
         //});
 
         //console.log(locations[0].location.lat);
-/*foursquare API request*/
-  //(function() {
-      self.fsLocations = ko.observableArray(locations);
-      //console.log(self.fsLocations);
 
-     function getFSinfo(location) {
-      var clientID = 'JS1EBO3RLBZPWCVMMJXNEPIDRMZXHM0ISZ54R0SWOKTPLPJN';
-      var ClientSec = '1VY312WE5KJBSOO4JD0UDLQV51III51AJ5T1RVGP0AZPHBE5';
-      var api = 'https://api.foursquare.com/v2/venues/search';
-      var version = 'v=20130815';
-      var llLat;
-      var llLng;
-      var errorMsg;
-      var rsp;
-
-         llLat = location.location.lat;
-         llLng = location.location.lng;
-      //var latlng = markers.position;
-      var fsApi = api + '?client_id=' + clientID + '&' + 'client_secret=' + ClientSec + '&' + version + '&ll=' + llLat +',' + llLng;
-      console.log();
-      $.ajax({
-         url: fsApi,
-         datatype: 'jsonp',
-         success: function(response) {
-            rsp = response;
-            console.log(rsp);
-
-            infoWindow.setContent('< href="' + location.fsApi + '">' + rsp.name + '</a>' + '<br>' + location.phone + '<br>');
-
-            infoWindow.open(map, location.marker);
-         }
-            });
-
-}
 
 
 
