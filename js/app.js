@@ -147,26 +147,27 @@ var styles = [
       //self.fsLocations = ko.observableArray(modLocations);
       //console.log(self.fsLocations);
 
-     function getFSinfo(modLocations) {
-        console.log("location: ",modLocations.location);
+     function getFSinfo(marker, infoWindow) {
+        console.log("location: ",marker.position);
       var clientID = 'JS1EBO3RLBZPWCVMMJXNEPIDRMZXHM0ISZ54R0SWOKTPLPJN';
       var ClientSec = '1VY312WE5KJBSOO4JD0UDLQV51III51AJ5T1RVGP0AZPHBE5';
       var api = 'https://api.foursquare.com/v2/venues/search';
       var version = 'v=20130815';
-      var llLat;
-      var llLng;
+      var ll;
+      //var llLng;
       var errorMsg;
       var rsp;
 
-         llLat = modLocations.location.lat;
-         llLng = modLocations.location.lng;
+         ll = marker.position;
+         //llLng = marker.position.lng;
       //var latlng = markers.position;
-      var fsApi = api + '?client_id=' + clientID + '&' + 'client_secret=' + ClientSec + '&' + version + '&ll=' + llLat +',' + llLng;
+      var fsApi = api + '?client_id=' + clientID + '&' + 'client_secret=' + ClientSec + '&' + version + '&ll=' + ll;
       console.log();
       $.ajax({
          url: fsApi,
          datatype: 'jsonp',
          success: function(response) {
+            console.log(response)
             rsp = response;
             console.log(rsp);
 
