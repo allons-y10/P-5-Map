@@ -7,7 +7,7 @@ var modLocations = [
           {title: 'Ventura Beach Marriott', location: {lat: 34.268859, lng: -119.273858}},
           {title: 'Arroyo Verde Park', location: {lat: 34.286451, lng: -119.22663}},
           {title: 'Grant Park', location: {lat: 34.286323, lng: -119.291635 }},
-          {title: 'West main bike Path', location: {lat: 34.281496, lng: -119.30618 }},
+          {title: 'Vista Coastal Bus Stop', location: {lat: 34.281496, lng: -119.30618 }},
           {title: 'Ventura Pier', location: {lat: 34.275067, lng: -119.290962}},
           {title: 'Ventura Beach', location: {lat: 34.240035, lng: -119.265579}},
           {title: 'Camino Real Park Tennis Courts', location: {lat: 34.269431, lng: -119.234076}}
@@ -132,6 +132,7 @@ var styles = [
             this.setIcon(defaultIcon);
           });
         }
+        console.log(markers);
 
         document.getElementById('show-listings').addEventListener('click', showListings);
         document.getElementById('hide-listings').addEventListener('click', hideListings);
@@ -148,32 +149,40 @@ var styles = [
       //console.log(self.fsLocations);
 
      function getFSinfo(marker, infoWindow) {
-        console.log("location: ",marker.position);
+        console.log("location: ",marker.position.lat());
       var clientID = 'JS1EBO3RLBZPWCVMMJXNEPIDRMZXHM0ISZ54R0SWOKTPLPJN';
       var ClientSec = '1VY312WE5KJBSOO4JD0UDLQV51III51AJ5T1RVGP0AZPHBE5';
       var api = 'https://api.foursquare.com/v2/venues/search';
       var version = 'v=20130815';
-      var ll;
-      //var llLng;
+      var llLat;
+      var llLng;
       var errorMsg;
-      var rsp;
+      var fsInfo;
+      var fsInfoUrl;
+      var fsInfoName;
+      var fsInfoPhone;
+      var fsInfoAddy;
 
-         ll = marker.position;
-         //llLng = marker.position.lng;
+         llLat = marker.position.lat();
+         llLng = marker.position.lng();
       //var latlng = markers.position;
-      var fsApi = api + '?client_id=' + clientID + '&' + 'client_secret=' + ClientSec + '&' + version + '&ll=' + ll;
+      var fsApi = api + '?client_id=' + clientID + '&' + 'client_secret=' + ClientSec + '&' + version + '&ll=' + llLat + ',' + llLng;
       console.log();
       $.ajax({
          url: fsApi,
          datatype: 'jsonp',
-         success: function(response) {
-            console.log(response)
-            rsp = response;
-            console.log(rsp);
+         success: function(data) {
+            console.log(data)
+            fsInfo = data.response.venues;
+            console.log(fsInfo);
+            fsInfoUrl = fsInfo[0].url;
+            fsInfoName = fsInfo[0].name;
+            fsInfoAddy = fsInfo[0].location.formattedAddress;
+            fsInfoPhone = fsInfo[0].contact.formattedPhone || 'No Phone Number'
 
-            infoWindow.setContent('< href="' + location.fsApi + '">' + rsp.name + '</a>' + '<br>' + location.phone + '<br>');
+            infoWindow.setContent('<a href="' + fsInfoUrl + '">' + fsInfoName + '</a>' + '<br>' + fsInfoAddy + '<br>' + fsInfoPhone + '<br>');
 
-            infoWindow.open(map, location.marker);
+            infoWindow.open(map, marker);
          }
             });
 
@@ -377,10 +386,6 @@ var styles = [
        this.marker = ko.observable(data.marker);
        this.infoWindow = ko.observable(data.infoWindow);
 
-       this.showWin = function() {
-        this.infoWindow().open(map, this.marker());
-        this.marker().animate();
-       }
    }
 
 
@@ -388,9 +393,9 @@ var styles = [
       var ViewModel = function() {
         var self = this;
 
-        var newList
+        this.locList = ko.observableArray(modLocations);
 
-        this.locList = ko.observableArray([]);
+        var newList
 
         this.filterValue = ko.observable("");
 
