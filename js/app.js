@@ -1,13 +1,13 @@
 //** model **\\
 //points of interest in Ventura
-var locations = [
+var modLocations = [
           {title: 'In-N-Out Burger', location: {lat: 34.268384, lng: -119.272895}},
           {title: "Pete's Breakfast House", location: {lat: 34.278077, lng: -119.269555}},
           {title: "Allison's Country Cafe", location: {lat: 34.273173, lng: -119.249263}},
           {title: 'Ventura Beach Marriott', location: {lat: 34.268859, lng: -119.273858}},
           {title: 'Arroyo Verde Park', location: {lat: 34.286451, lng: -119.22663}},
           {title: 'Grant Park', location: {lat: 34.286323, lng: -119.291635 }},
-          {title: 'West main bike Path', location: {lat: 34.281496, lng: -119.30618 }},
+          {title: 'Vista Coastal Bus Stop', location: {lat: 34.281496, lng: -119.30618 }},
           {title: 'Ventura Pier', location: {lat: 34.275067, lng: -119.290962}},
           {title: 'Ventura Beach', location: {lat: 34.240035, lng: -119.265579}},
           {title: 'Camino Real Park Tennis Courts', location: {lat: 34.269431, lng: -119.234076}}
@@ -103,10 +103,10 @@ var styles = [
       var highlightedIcon = makeMarkerIcon('FFFF24');
 
       //for-loop to go through locations array
-      for (var i = 0; i < locations.length; i++) {
+      for (var i = 0; i < modLocations.length; i++) {
           // Get the position from the location array.
-          var position = locations[i].location;
-          var title = locations[i].title;
+          var position = modLocations[i].location;
+          var title = modLocations[i].title;
           // Create a marker per location, and put into markers array.
            var marker = new google.maps.Marker({
             position: position,
@@ -120,7 +120,7 @@ var styles = [
           markers.push(marker);
           // Create an onclick event to open an infowindow at each marker.
           marker.addListener('click', function() {
-            populateInfoWindow(this, largeInfoWindow);
+            /*populateInfoWindow*/getFSinfo(this, largeInfoWindow);
           });
           markers[i].setMap(map);
           // Two event listeners - one for mouseover, one for mouseout,
@@ -132,6 +132,7 @@ var styles = [
             this.setIcon(defaultIcon);
           });
         }
+        console.log(markers);
 
         document.getElementById('show-listings').addEventListener('click', showListings);
         document.getElementById('hide-listings').addEventListener('click', hideListings);
@@ -142,6 +143,50 @@ var styles = [
             searchWithinTime();
         });
       }
+      /*foursquare API request*/
+  //(function() {
+      //self.fsLocations = ko.observableArray(modLocations);
+      //console.log(self.fsLocations);
+
+     function getFSinfo(marker, infoWindow) {
+        console.log("location: ",marker.position.lat());
+      var clientID = 'JS1EBO3RLBZPWCVMMJXNEPIDRMZXHM0ISZ54R0SWOKTPLPJN';
+      var ClientSec = '1VY312WE5KJBSOO4JD0UDLQV51III51AJ5T1RVGP0AZPHBE5';
+      var api = 'https://api.foursquare.com/v2/venues/search';
+      var version = 'v=20130815';
+      var llLat;
+      var llLng;
+      var errorMsg;
+      var fsInfo;
+      var fsInfoUrl;
+      var fsInfoName;
+      var fsInfoPhone;
+      var fsInfoAddy;
+
+         llLat = marker.position.lat();
+         llLng = marker.position.lng();
+      //var latlng = markers.position;
+      var fsApi = api + '?client_id=' + clientID + '&' + 'client_secret=' + ClientSec + '&' + version + '&ll=' + llLat + ',' + llLng;
+      console.log();
+      $.ajax({
+         url: fsApi,
+         datatype: 'jsonp',
+         success: function(data) {
+            console.log(data)
+            fsInfo = data.response.venues;
+            console.log(fsInfo);
+            fsInfoUrl = fsInfo[0].url;
+            fsInfoName = fsInfo[0].name;
+            fsInfoAddy = fsInfo[0].location.formattedAddress;
+            fsInfoPhone = fsInfo[0].contact.formattedPhone || 'No Phone Number'
+
+            infoWindow.setContent('<a href="' + fsInfoUrl + '">' + fsInfoName + '</a>' + '<br>' + fsInfoAddy + '<br>' + fsInfoPhone + '<br>');
+
+            infoWindow.open(map, marker);
+         }
+            });
+
+}
 
       // This function populates the infowindow when the marker is clicked. We'll only allow
       // one infowindow which will open at the marker that is clicked, and populate based
@@ -341,25 +386,22 @@ var styles = [
        this.marker = ko.observable(data.marker);
        this.infoWindow = ko.observable(data.infoWindow);
 
-       this.showWin = function() {
-        this.infoWindow().open(map, this.marker());
-        this.marker().animate();
-       }
    }
-
 
 
 //** ViewModel **\\
       var ViewModel = function() {
         var self = this;
 
-        this.locList = ko.observableArray([]);
+        this.locList = ko.observableArray(modLocations);
+
+        var newList
 
         this.filterValue = ko.observable("");
 
         this.masterList = ko.computed(function() {
-            var newList = []
-            locations.forEach(function(LocItem) {
+            newList = []
+            modLocations.forEach(function(LocItem) {
                 if (LocItem.title.toLowerCase().includes(self.filterValue().toLowerCase())) {
                     newList.push(new Loc(LocItem));
                 }
@@ -376,9 +418,18 @@ var styles = [
             }
             return newList;
         }, this);
+
         //locations.forEach(function(LocItem) {
             //self.locList.push(new Loc(LocItem));
-        //})
+            //console.log(LocItem);
+        //});
+
+        //console.log(locations[0].location.lat);
+
+
+
+
+
 
 }
 
@@ -386,3 +437,5 @@ var styles = [
 
 
       ko.applyBindings(new ViewModel());
+
+
