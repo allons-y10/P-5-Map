@@ -147,6 +147,12 @@ var styles = [
   //(function() {
       //self.fsLocations = ko.observableArray(modLocations);
       //console.log(self.fsLocations);
+      infoWindow =  new google.maps.InfoWindow();
+
+       function showWin(markers) {
+         infoWindow().open(map, marker());
+         marker().animate();
+         }
 
      function getFSinfo(marker, infoWindow) {
         console.log("location: ",marker.position.lat());
@@ -380,11 +386,17 @@ var styles = [
         }
       }
 
+
       var Loc = function(data) {
        this.title = ko.observable(data.title);
        this.location = ko.observable(data.location);
        this.marker = ko.observable(data.marker);
-       this.infoWindow = ko.observable(data.infoWindow);
+       //this.infoWindow =  new google.maps.InfoWindow();
+
+       //this.showWin = function() {
+         //this.infoWindow().open(map, this.marker());
+         //this.marker().animate();
+         //}
 
    }
 
