@@ -30,3 +30,8 @@ This is a single page app that allows you to explore the city of **Ventura**. At
 3. The MVVM is easy to read.
 4. using AJAX is easier than you think it is.
 5. Google knows entirely way too much.
+
+#Thanks#
+1. To my Wife for taking care of things while I work on this project
+2. To the Udacity forums
+3. To Ryan Vrba for the 1:1 coaching, helped a lot.
