@@ -141,7 +141,8 @@ function initMap() {
     highlightedIcon = makeMarkerIcon('FFFF24');
 
     //for-loop to go through locations array
-    console.log(vm.masterList());
+    //console.log(vm.masterList());
+    //vm.masterList().forEach(function(location) {
     for (var i = 0; i < vm.masterList().length; i++) {
         // Get the position from the location array.
         var position = vm.masterList()[i].location();
@@ -227,13 +228,13 @@ function getFSinfo(marker, infoWindow) {
         url: fsApi,
         datatype: 'jsonp',
         success: function(data) {
-            console.log(data)
+            //console.log(data)
             fsInfo = data.response.venues;
             console.log(fsInfo);
             fsInfoUrl = fsInfo[0].url;
             fsInfoName = fsInfo[0].name;
             fsInfoAddy = fsInfo[0].location.formattedAddress;
-            fsInfoPhone = fsInfo[0].contact.formattedPhone || 'This Place does not believe in phones'
+            fsInfoPhone = fsInfo[0].contact.formattedPhone || 'This Place does not believe in phones';
 
             infoWindow.setContent('<a href="' + fsInfoUrl + '">' + fsInfoName + '</a>' + '<br>' + fsInfoAddy + '<br>' + fsInfoPhone + '<br>');
 
@@ -245,7 +246,7 @@ function getFSinfo(marker, infoWindow) {
                     infoWindow.setContent("ERROR! ERROR WILL ROBINSON! ERROR!");
                     infoWindow.open(map, marker);
                 }
-            }, 3000);
+            });
         }
     });
 
@@ -333,8 +334,8 @@ function makeMarkerIcon(markerColor) {
         new google.maps.Point(10, 34),
         new google.maps.Size(21, 34));
     return markerImage;
-};
-// This function takes the input value in the find nearby area text input
+}
+/*Dead Code// This function takes the input value in the find nearby area text input
 // locates it, and then zooms into that area. This is so that the user can
 // show all listings, then decide to focus on one area of the map.
 function zoomToArea() {
@@ -343,7 +344,7 @@ function zoomToArea() {
     // Get the address or place that the user entered.
     var address = document.getElementById('zoom-to-area-text').value;
     // Make sure the address isn't blank.
-    if (address == '') {
+    if (address === '') {
         window.alert('You must enter an area, or address.');
     } else {
         // Geocode the address/area entered to get the center. Then, center the map
@@ -373,7 +374,7 @@ function searchWithinTime() {
     var distanceMatrixService = new google.maps.DistanceMatrixService;
     var address = document.getElementById('search-within-time-text').value;
     // Check to make sure the place entered isn't blank.
-    if (address == '') {
+    if (address === '') {
         window.alert('You must enter an address.');
     } else {
         hideListings();
@@ -449,7 +450,7 @@ function displayMarkersWithinTime(response) {
     if (!atLeastOne) {
         window.alert('We could not find any locations within that distance!');
     }
-}
+}*/
 
 var Loc = function(data) {
     this.title = ko.observable(data.title);
@@ -457,7 +458,7 @@ var Loc = function(data) {
     this.marker = data.marker;
     /*this.infoWindow = ko.observable(data.infoWindow);*/
 
-}
+};
 
 
 //** ViewModel **\\
@@ -466,12 +467,12 @@ var ViewModel = function() {
 
     //this.locList = ko.observableArray(modLocations);
 
-    var newList
+    var newList;
 
     this.filterValue = ko.observable("");
 
     this.masterList = ko.computed(function() {
-        newList = []
+        newList = [];
         modLocations.forEach(function(LocItem) {
             if (LocItem.title.toLowerCase().includes(self.filterValue().toLowerCase())) {
                 newList.push(new Loc(LocItem));
@@ -500,7 +501,7 @@ var ViewModel = function() {
 
 
 
-}
+};
 
 var vm = new ViewModel();
 ko.applyBindings(vm);
