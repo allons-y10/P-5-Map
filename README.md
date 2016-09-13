@@ -12,7 +12,7 @@ This is a single page app that allows you to explore the city of **Ventura**. At
 
 ##Technology Used##
 1. KnockOut
-2. Googple API
+2. Google API
 3. Foursquare API
 4. MVVM Organization
 
